@@ -1,71 +1,82 @@
-ï»¿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Hur snabbt vï¿½r karaktï¿½r fï¿½r rï¿½ra sig
-    public float jumpForce = 5f; // Vilken force hopp knappen kan gï¿½ra
-    public Transform groundCheck; // Kolla om spelaren har rï¿½rt vid marken
-    public float groundCheckRadius = 0.2f; // Inom vilken radie kan vi rï¿½ra marken
-    public LayerMask groundLayer; // Vilket lager har marken
-    private bool isFacingRight = true; // Kolla vilket hï¿½ll karaktï¿½ren tittar i
-    private bool isGrounded = false; // Om vi ï¿½r pï¿½ marken eller inte
-    private Rigidbody2D rb; // Ref till vï¿½r rigidbody2D
-    private Animator animator; // Ref till vÃ¥r animator 
+    public float speed = 5f;
+    public float jumpHeight = 2.5f;
+    public float jumpDuration = 1.5f;
 
-    private void Start()
+    private bool isJumping = false;
+    private float jumpTimer = 0f;
+    private float startY;
+
+    void Update()
     {
-        rb = GetComponent<Rigidbody2D>(); // Hï¿½mta vï¿½r Rigidbody 2D
-        animator = GetComponent<Animator>(); // HÃ¤mta vÃ¥r Animator
-    }
-    private void Update()
-    {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer); // Kolla om spelaren ï¿½r pï¿½ marken
-        float moveDirection = Input.GetAxis("Horizontal");  // Kolla om vi rï¿½r oss horisontellt
-        Move(moveDirection); // Flytta spelaren
-        if (moveDirection > 0 && !isFacingRight) // Flippa spelaren sï¿½ den tittar i den riktningen som den rï¿½r sig i
+        // Rörelse med A och D
+        float x = 0f;
+
+        if (Input.GetKey(KeyCode.A))
         {
-            Flip();
+            x = -1f;
         }
-        else if (moveDirection < 0 && isFacingRight) // Flippa spelaren sï¿½ den tittar i den riktningen som den rï¿½r sig i
+
+        if (Input.GetKey(KeyCode.D))
         {
-            Flip();
+            x = 1f;
         }
-        if (Input.GetButtonDown("Jump") && isGrounded) // Om vi tycker pï¿½ space, sï¿½ lï¿½t spelaren hoppa
+
+        // Vänder spriten åt vänster
+        if (x == -1f)
         {
-            Jump();
+            transform.localScale = new Vector3(-1, 1, 1);
         }
-        animator.SetBool("Jump", !isGrounded);
-    }
-    private void Move(float direction)
-    {
-        Vector2 movement = new Vector2(direction * moveSpeed, rb.linearVelocity.y); // rï¿½kna ut hur vi rï¿½r oss i relation till spelarens velocity
-        rb.linearVelocity = movement;
-        float absoluteSpeed = Mathf.Abs(direction * moveSpeed);
-        animator.SetFloat("Speed", absoluteSpeed); // AnvÃ¤nd Speed parametern i animatorn
-    }
-    private void Jump()
-    {
-        rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse); // Lï¿½gg till vertical force fï¿½r att kunna hoppa
-    }
-    private void Flip()
-    {
-        isFacingRight = !isFacingRight;  // Flippa player spriten horisontellt
-        transform.Rotate(0f, 180f, 0f);
-        Transform firepoint = transform.Find("FirePoint");
-        firepoint.localPosition = new Vector3(-firepoint.localPosition.x, firepoint.localPosition.y, firepoint.localPosition.z);
-    }
-    /*private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "NextLevel")
-	{
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
+        // Vänder spriten åt höger
+        if (x == 1f)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
         }
-        if (collision.tag == "PreviousLevel")
-	{
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+
+        // Flyttar spelaren åt sidorna
+        transform.position += Vector3.right * x * speed * Time.deltaTime;
+
+        // Startar hoppet med Space
+        if (Input.GetKeyDown(KeyCode.Space) && isJumping == false)
+        {
+            isJumping = true;
+            jumpTimer = 0f;
+            startY = transform.position.y;
         }
-    }^*/
+
+        // Om spelaren hoppar
+        if (isJumping == true)
+        {
+            jumpTimer += Time.deltaTime;
+
+            // Räknar ut hur långt hoppet har kommit
+            float progress = jumpTimer / jumpDuration;
+
+            // Gör hoppet mjukt
+            float jump = Mathf.Sin(progress * Mathf.PI) * jumpHeight;
+
+            // Flyttar spelaren upp och ner
+            transform.position = new Vector3(
+                transform.position.x,
+                startY + jump,
+                transform.position.z
+            );
+
+            // När hoppet är klart
+            if (progress >= 1f)
+            {
+                isJumping = false;
+
+                transform.position = new Vector3(
+                    transform.position.x,
+                    startY,
+                    transform.position.z
+                );
+            }
+        }
+    }
 }
