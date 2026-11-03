@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isJumping = false;
     private float jumpTimer = 0f;
     private float startY;
+    
 
     void Update()
     {
