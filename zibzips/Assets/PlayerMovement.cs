@@ -9,12 +9,22 @@ public class PlayerMovement : MonoBehaviour
     private bool isJumping = false;
     private float jumpTimer = 0f;
     private float startY;
-    
+    public float Sprint = 10;
+
+
 
     void Update()
     {
-        // Rörelse med A och D
-        float x = 0f;
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            speed = Sprint;
+        }
+        else 
+        {
+            speed = 5;
+        }
+            // Rörelse med A och D
+            float x = 0f;
 
         if (Input.GetKey(KeyCode.A))
         {
