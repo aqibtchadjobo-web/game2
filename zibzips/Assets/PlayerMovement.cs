@@ -1,20 +1,35 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
     public float jumpHeight = 2.5f;
     public float jumpDuration = 1.5f;
-
+    private bool isGrounded = false;
     private bool isJumping = false;
     private float jumpTimer = 0f;
     private float startY;
     public float Sprint = 10;
+    private Rigidbody2D rb; // Ref till v�r rigidbody2D
+    private Animator animator; // Ref till vår animator 
 
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>(); // H�mta v�r Rigidbody 2D
+        animator = GetComponent<Animator>(); // Hämta vår Animator
+    }
+    private void Move(float direction)
+    {
+        Vector2 movement = new Vector2(direction * speed, rb.linearVelocity.y); // r�kna ut hur vi r�r oss i relation till spelarens velocity
+        rb.linearVelocity = movement;
+        float absoluteSpeed = Mathf.Abs(direction *speed);
+        animator.SetFloat("Speed", absoluteSpeed); // Använd Speed parametern i animatorn
+    }
 
 
     void Update()
     {
+        
         if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = Sprint;
@@ -23,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
         {
             speed = 5;
         }
-            // R�relse med A och D
+            // Rörelse med A och D
             float x = 0f;
 
         if (Input.GetKey(KeyCode.A))
@@ -36,19 +51,19 @@ public class PlayerMovement : MonoBehaviour
             x = 1f;
         }
 
-        // V�nder spriten �t v�nster
+        // Vänder spriten åt vänster
         if (x == -1f)
         {
             transform.localScale = new Vector3(-1, 1, 1);
         }
 
-        // V�nder spriten �t h�ger
+        // Vänder spriten åt höger
         if (x == 1f)
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        // Flyttar spelaren �t sidorna
+        // Flyttar spelaren åt sidorna
         transform.position += Vector3.right * x * speed * Time.deltaTime;
 
         // Startar hoppet med Space
@@ -58,16 +73,16 @@ public class PlayerMovement : MonoBehaviour
             jumpTimer = 0f;
             startY = transform.position.y;
         }
-
+        animator.SetBool("Jump", !isGrounded);
         // Om spelaren hoppar
         if (isJumping == true)
         {
             jumpTimer += Time.deltaTime;
 
-            // R�knar ut hur l�ngt hoppet har kommit
+            // Räknar ut hur långt hoppet har kommit
             float progress = jumpTimer / jumpDuration;
 
-            // G�r hoppet mjukt
+            // Gör hoppet mjukt
             float jump = Mathf.Sin(progress * Mathf.PI) * jumpHeight;
 
             // Flyttar spelaren upp och ner
@@ -77,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
                 transform.position.z
             );
 
-            // N�r hoppet �r klart
+            // När hoppet är klart
             if (progress >= 1f)
             {
                 isJumping = false;
