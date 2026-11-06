@@ -12,19 +12,14 @@ public class PlayerMovement : MonoBehaviour
     public float Sprint = 10;
     private Rigidbody2D rb; // Ref till v�r rigidbody2D
     private Animator animator; // Ref till vår animator 
-
+    public bool isDashing = false;
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // H�mta v�r Rigidbody 2D
         animator = GetComponent<Animator>(); // Hämta vår Animator
     }
-    private void Move(float direction)
-    {
-        Vector2 movement = new Vector2(direction * speed, rb.linearVelocity.y); // r�kna ut hur vi r�r oss i relation till spelarens velocity
-        rb.linearVelocity = movement;
-        float absoluteSpeed = Mathf.Abs(direction *speed);
-        animator.SetFloat("Speed", absoluteSpeed); // Använd Speed parametern i animatorn
-    }
+    
+
 
 
     void Update()

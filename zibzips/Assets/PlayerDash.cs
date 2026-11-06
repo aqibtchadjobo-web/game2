@@ -8,11 +8,11 @@ public class PlayerDash : MonoBehaviour
 
     private float dashTimeLeft;
     private int dashDirection;
-
+    
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private PlayerMovement movement;
-
+    
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();

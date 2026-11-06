@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 50416757807891219}
   m_Layer: 0
   m_Name: bullet
-  m_TagString: shot
+  m_TagString: LaserShot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

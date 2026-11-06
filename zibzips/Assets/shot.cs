@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class shot : MonoBehaviour
 {
+    float timer = 0;
     [SerializeField]
     float Speed = 9f;
 
@@ -19,9 +20,15 @@ public class shot : MonoBehaviour
     void Update()
     {
         transform.position += new Vector3(dira, 0, 0) * Speed * Time.deltaTime;
-       
-       
-       
+        timer += Time.deltaTime;
+        if (timer > 3)
+        {
+            Destroy(gameObject);
+
+            timer = 0;
+        }
+
+
         // transform.Rotate(new Vector3(0, 0, 90 ));// savin this for later frfr
     }
 }
